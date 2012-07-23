@@ -61,12 +61,12 @@ window.addEventListener("load", function() {
 	});
 	game.makeCanvas();
 	qdip.load( { 
-		face: "face1.png",
-		face2: "face2.png",
-		face3: "face3.png",
-		face4: "face4.png",
-		brick: "brick.png",
-		brick2: "brick2.png",
-		brick3: "brick3.png"
+		face: "img/face1.png",
+		face2: "img/face2.png",
+		face3: "img/face3.png",
+		face4: "img/face4.png",
+		brick: "img/brick.png",
+		brick2: "img/brick2.png",
+		brick3: "img/brick3.png"
 	});	
 });
