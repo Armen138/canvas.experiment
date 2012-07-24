@@ -10,10 +10,10 @@ bt.Vector = function(x, y) {
 	var vector = ns.Pooled.pull("vector");
 	if(!vector) {	
 		vector = Object.create(ns.Pooled(), {
-			add: { value: function(other) { return ns.Vector(vector.X + other.X, vector.Y + other.Y); }},
-			subtract: { value: function(other) { return ns.Vector(vector.X - other.X, vector.Y - other.Y); }},
-			multiply: { value: function(other) { return ns.Vector(vector.X * other.X, vector.Y * other.Y); }},
-			divide: { value: function(other) { return ns.Vector(vector.X / other.X, vector.Y / other.Y); }},
+			add: { value: function(other) { return bt.Vector(vector.X + other.X, vector.Y + other.Y); }},
+			subtract: { value: function(other) { return bt.Vector(vector.X - other.X, vector.Y - other.Y); }},
+			multiply: { value: function(other) { return bt.Vector(vector.X * other.X, vector.Y * other.Y); }},
+			divide: { value: function(other) { return bt.Vector(vector.X / other.X, vector.Y / other.Y); }},
 			type: { value: "vector" }
 		});
 	}
