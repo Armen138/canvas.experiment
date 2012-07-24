@@ -16,7 +16,7 @@ function noised() {
 	canvas.height = height;
 	var context = canvas.getContext("2d");		
 	var noisedImage = context.createImageData(width, height);
-	var basecolor = bt.Color("#FFF333");
+	var basecolor = bt.Color("#FFF333");//[200, 0, 100];
 	console.log(basecolor);
 	var levels = 3;
 	for(var x = 0; x < width; x++) {
