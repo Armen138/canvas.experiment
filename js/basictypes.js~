@@ -30,6 +30,10 @@ bt.Color = function(input) {
 			r = (parseInt(input[1], 16) + 1) * 16;
 			g = (parseInt(input[2], 16) + 1) * 16;
 			b = (parseInt(input[3], 16) + 1) * 16;
+			console.log(input);
+			console.log(r);
+			console.log(g);
+			console.log(b);
 		} else {
 			r = (parseInt(input.substr(1, 2), 16) + 1);
 			g = (parseInt(input.substr(3, 2), 16) + 1);

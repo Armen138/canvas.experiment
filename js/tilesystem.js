@@ -20,10 +20,16 @@ ts.Tile = function(img) {
 				value: function(context) {
 					context = context || game.context;
 					if(tile.visible) {
+						context.save();
+						context.translate(position.X, position.Y);
+						if(tile.scale) {
+							context.scale(tile.scale.X, tile.scale.Y);
+						}
 						context.drawImage.apply(context, draw);
 						tile.each(function() {
 							this.draw(context);
 						});
+						context.restore();
 					}
 				}
 			},
@@ -31,7 +37,7 @@ ts.Tile = function(img) {
 				set: function(pos) {
 					position.release();
 					position = pos;
-					draw = [image, pos.X - image.width / 2, pos.Y - image.height / 2];
+					//draw = [image, pos.X - image.width / 2, pos.Y - image.height / 2];
 				},
 				get: function() {
 					return position;
@@ -43,8 +49,10 @@ ts.Tile = function(img) {
 				},
 				set: function(idx) {
 					tileIndex = idx;
-					var Y = parseInt(t / (image.width / tileSize[WIDTH]), 10) * tileSize[WIDTH];
-					var X = parseInt(t % (image.width / tileSize[HEIGHT]), 10) * tileSize[WIDTH];					
+					var Y = parseInt(idx / (image.width / tileSize[WIDTH]), 10) * tileSize[WIDTH];
+					var X = parseInt(idx % (image.width / tileSize[HEIGHT]), 10) * tileSize[WIDTH];	
+					//draw = [image, X, Y, tileSize[WIDTH], tileSize[HEIGHT], position.X - tileSize[WIDTH] / 2, position.Y - tileSize[HEIGHT] / 2, tileSize[WIDTH], tileSize[HEIGHT]];		
+					draw = [image, X, Y, tileSize[WIDTH], tileSize[HEIGHT], - tileSize[WIDTH] / 2, - tileSize[HEIGHT] / 2, tileSize[WIDTH], tileSize[HEIGHT]];		
 				}
 			},
 			image: {
@@ -76,21 +84,13 @@ ts.TileSet = function() {
 		cache = (function() { var c = document.createElement("canvas"); c.width = game.canvas.width; c.height = game.canvas.height; return c;}()),
 		cacheTile = ts.Tile(cache),
 		context = cache.getContext("2d");
-	var img = [
-		qdip.images.face,
-		qdip.images.face2,
-		qdip.images.face3,
-		qdip.images.face4,
-		qdip.images.brick,
-		qdip.images.brick2,
-		qdip.images.brick3
-		];		
-	//insert img 0 to 4 = picture	
-    for(var x = 0; x < game.canvas.width; x += img[0].width) {
-        for(var y = 0; y < game.canvas.height; y += img[0].height) {
-        	var idx = Math.floor(Math.random() * 7.0),
-            	t = ts.Tile(img[idx]);
-            t.position = bt.Vector(x, y);            
+
+    for(var x = 0; x < game.canvas.width; x += 64) {
+        for(var y = 0; y < game.canvas.height; y += 64) {
+        	var idx = Math.floor(Math.random() * 4.0),
+            	t = ts.Tile(qdip.images.tiles);
+            t.position = bt.Vector(x, y);         
+            t.index = idx;   
             tiles.add(t);
             game.count++;
         }
