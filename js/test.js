@@ -8,21 +8,13 @@ game = {
 
 
 function displayStuff(img) {
-    /*for(var x = 0; x < window.innerWidth; x += img.width) {
-        for(var y = 0; y < window.innerHeight; y += img.height) {
-            var t = ts.Tile(img);
-            t.position = bt.Vector(x, y);
-            game.root.add(t);
-            game.count++;
-        }
-    }*/
     var tileSet = ts.TileSet();
     game.root.add(tileSet);
 	render();
 }
 
 function render() {
-	//ns.context.fillRect(0, 0, window.innerWidth, window.innerHeight);
+	game.context.fillRect(0, 0, window.innerWidth, window.innerHeight);
 	game.frames++;
 	game.root.each(function() {
 		this.draw();
