@@ -6,19 +6,31 @@ game = {
 
 };
 
-function noised() {
-	var width = 500,
-		height = 500,
-		resolution = 128,
+function noiseMap(w, h, res, lvl) {
+	var map = [],
+		noise = new SimplexNoise();
+	map.length = w * h;
+	for(var x = 0; x < w; x++) {
+		for(var y = 0; y < h; y++) {			
+			map[x + y * w] = parseInt((((noise.noise(x / res, y / res) + 1 )/ 2)  * lvl), 10);
+		}
+	}	
+	return map;
+};
+function noised(w, h, res, lvl, color) {
+	var width = w || 40,
+		height = h || 40, 
+		resolution = res || 10,
 		noise = new SimplexNoise();
 	var canvas = document.createElement("canvas");
 	canvas.width = width;
 	canvas.height = height;
 	var context = canvas.getContext("2d");		
 	var noisedImage = context.createImageData(width, height);
-	var basecolor = bt.Color("#FFF333");
+	var basecolor = color || bt.Color("#11A600");
 	console.log(basecolor);
-	var levels = 3;
+	var levels = lvl || 3;
+	
 	for(var x = 0; x < width; x++) {
 		for(var y = 0; y < height; y++) {
 			var shade = parseInt((((noise.noise(x / resolution, y / resolution) + 1 )/ 2)  * levels), 10) * (256 / levels);
@@ -37,17 +49,30 @@ function noised() {
 function displayStuff(img) {
 
     //var tileSet = ts.TileSet();
-    //game.root.add(tileSet);
-    var tile = ts.Tile(noised());
+    //game.root.add(tileSet);    
+    var tile = ts.Tile(noised(400, 400, 120, 7, bt.Color("#FFF")));
+    var tiles = [
+    	noised(64, 64, 6, 20, bt.Color("#11A600")),
+    	noised(64, 64, 6, 20, bt.Color("#CCE010")),
+    	noised(64, 64, 6, 20, bt.Color("#E6DFC8")),
+    	noised(64, 64, 6, 20, bt.Color("#7A6212"))
+    ];
     //tile.scale = bt.Vector(10, 10);
-    tile.position = bt.Vector(250, 250);
+    tile.position = bt.Vector(400, 300);
     game.root.add(tile);
+    for(var i = 0; i < tiles.length; i++) {
+    	var t = ts.Tile(tiles[i]);
+    	t.position = bt.Vector(64 * i + 32, 32);
+    	game.root.add(t);
+    }
+    var tileSet = ts.TileSet(tiles, noiseMap(100, 100, 40, 4));
+    game.root.add(tileSet);    
 
 	render();
 }
 
 function render() {
-	game.context.fillRect(0, 0, window.innerWidth, window.innerHeight);
+	//game.context.fillRect(0, 0, window.innerWidth, window.innerHeight);
 	game.frames++;
 	game.root.each(function() {
 		this.draw();
@@ -78,7 +103,7 @@ game.makeCanvas = function() {
 };
 
 window.addEventListener("load", function() {
-	qdip.on("load", function() {
+	/*qdip.on("load", function() {
 		displayStuff(qdip.images["face"]);
 	});
 	qdip.on("progress", function(file) {
@@ -87,6 +112,8 @@ window.addEventListener("load", function() {
 	game.makeCanvas();
 	qdip.load( { 
 		tiles: "img/colorful.png"
-	});	
+	});*/
+	game.makeCanvas();
+	displayStuff();	
 });
 

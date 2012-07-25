@@ -70,7 +70,9 @@ ts.Tile = function(img) {
 	return tile;
 };
 
-ts.TileSet = function() {
+ts.TileSet = function(tilearray, map) {
+	console.log(tilearray);
+	var gridSize = Math.sqrt(map.length) | 0;	
 	var tileSet = Object.create(ns.Node(), {
 			draw: {
 				value: function() {
@@ -85,12 +87,13 @@ ts.TileSet = function() {
 		cacheTile = ts.Tile(cache),
 		context = cache.getContext("2d");
 
-    for(var x = 0; x < game.canvas.width; x += 64) {
-        for(var y = 0; y < game.canvas.height; y += 64) {
-        	var idx = Math.floor(Math.random() * 4.0),
-            	t = ts.Tile(qdip.images.tiles);
-            t.position = bt.Vector(x, y);         
-            t.index = idx;   
+    for(var x = 0; x < gridSize; x++) {
+        for(var y = 0; y < gridSize; y++) {
+        	var idx = map[x + y * gridSize];//Math.floor(Math.random() * 4.0),
+            	t = ts.Tile(tilearray[idx]);
+            	console.log(t);
+            t.position = bt.Vector(x * 64, y * 64);         
+            //t.index = idx;   
             tiles.add(t);
             game.count++;
         }
