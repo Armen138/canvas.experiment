@@ -18,8 +18,8 @@ function noiseMap(w, h, res, lvl) {
 	return map;
 };
 function noised(w, h, res, lvl, color) {
-	var width = w || 40,
-		height = h || 40, 
+	var width = w || 10,
+		height = h || 10, 
 		resolution = res || 10,
 		noise = new SimplexNoise();
 	var canvas = document.createElement("canvas");

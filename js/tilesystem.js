@@ -8,6 +8,7 @@ ts.Tile = function(img) {
 	"use strict";
 	var tile = ns.Pooled.pull("tile"),
 		tileIndex = 0,
+		tilePosition = [0, 0],
 		tileSize = [64, 64],
 		position = bt.Vector(),
 		WIDTH = 0,
@@ -25,6 +26,7 @@ ts.Tile = function(img) {
 						if(tile.scale) {
 							context.scale(tile.scale.X, tile.scale.Y);
 						}
+						draw = [image, tilePosition[0], tilePosition[1], tileSize[WIDTH], tileSize[HEIGHT], - tileSize[WIDTH] / 2, - tileSize[HEIGHT] / 2, tileSize[WIDTH], tileSize[HEIGHT]];		
 						context.drawImage.apply(context, draw);
 						tile.each(function() {
 							this.draw(context);
@@ -50,9 +52,9 @@ ts.Tile = function(img) {
 				set: function(idx) {
 					tileIndex = idx;
 					var Y = parseInt(idx / (image.width / tileSize[WIDTH]), 10) * tileSize[WIDTH];
-					var X = parseInt(idx % (image.width / tileSize[HEIGHT]), 10) * tileSize[WIDTH];	
-					//draw = [image, X, Y, tileSize[WIDTH], tileSize[HEIGHT], position.X - tileSize[WIDTH] / 2, position.Y - tileSize[HEIGHT] / 2, tileSize[WIDTH], tileSize[HEIGHT]];		
-					draw = [image, X, Y, tileSize[WIDTH], tileSize[HEIGHT], - tileSize[WIDTH] / 2, - tileSize[HEIGHT] / 2, tileSize[WIDTH], tileSize[HEIGHT]];		
+					var X = parseInt(idx % (image.width / tileSize[HEIGHT]), 10) * tileSize[WIDTH];
+					tilePosition = [X, Y];
+					draw = [image, X, Y, tileSize[WIDTH], tileSize[HEIGHT], tile.parent.offset.X - tileSize[WIDTH] / 2, tile.parent.offset.Y - tileSize[HEIGHT] / 2, tileSize[WIDTH], tileSize[HEIGHT]];		
 				}
 			},
 			image: {
@@ -94,14 +96,18 @@ ts.TileSet = function(tilearray, map) {
             	console.log(t);
             t.position = bt.Vector(x * 64, y * 64);         
             //t.index = idx;   
-            tiles.add(t);
+            tileSet.add(t);
             game.count++;
         }
     }
+    tiles.offset = bt.Vector(0, 0);
+    tileSet.offset = bt.Vector(0, 0);
+    tileSet.size = bt.Vector(500, 500);
     tiles.each(function() {
     	this.draw(context);
     });
     cacheTile.position = bt.Vector(cache.width / 2, cache.height / 2);
     tileSet.add(cacheTile);
+    //tileSet.add(tiles);
 	return tileSet;	
 }

@@ -56,6 +56,7 @@ ns.Node = function() {
 			add: {
 				value : function(child) {
 					children.push(child);
+					child.parent = node;
 				},
 				enumerable: true
 			},
