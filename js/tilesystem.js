@@ -73,14 +73,23 @@ ts.Tile = function(img) {
 };
 
 ts.TileSet = function(tilearray, map) {
-	console.log(tilearray);
-	var gridSize = Math.sqrt(map.length) | 0;	
+	console.log(tilearray);	
+	var gridSize = map.length;	
 	var tileSet = Object.create(ns.Node(), {
 			draw: {
 				value: function() {
-					tileSet.each(function() {
-						this.draw();
-					});
+					if(tileSet.offset) {
+						var tl = tileSet.offset;
+						var screenSize = bt.Vector(game.canvas.width / 64, game.canvas.height / 64);
+						var br = tileSet.offset.add(screenSize);
+						for(var x = tl.X; x < br.X; x++) {
+							for(var y = tl.Y; y < br.Y; y++) {
+								game.context.drawImage(tilearray[map[x][y]], (x - tileSet.offset.X) * 64, (y - tileSet.offset.Y) * 64);
+							}
+						}
+						br.release();
+						screenSize.release();
+					}
 				}
 			}
 		}),
@@ -88,26 +97,11 @@ ts.TileSet = function(tilearray, map) {
 		cache = (function() { var c = document.createElement("canvas"); c.width = game.canvas.width; c.height = game.canvas.height; return c;}()),
 		cacheTile = ts.Tile(cache),
 		context = cache.getContext("2d");
-
-    for(var x = 0; x < gridSize; x++) {
-        for(var y = 0; y < gridSize; y++) {
-        	var idx = map[x + y * gridSize];//Math.floor(Math.random() * 4.0),
-            	t = ts.Tile(tilearray[idx]);
-            	console.log(t);
-            t.position = bt.Vector(x * 64, y * 64);         
-            //t.index = idx;   
-            tileSet.add(t);
-            game.count++;
-        }
-    }
-    tiles.offset = bt.Vector(0, 0);
     tileSet.offset = bt.Vector(0, 0);
-    tileSet.size = bt.Vector(500, 500);
-    tiles.each(function() {
-    	this.draw(context);
-    });
-    cacheTile.position = bt.Vector(cache.width / 2, cache.height / 2);
-    tileSet.add(cacheTile);
-    //tileSet.add(tiles);
+    /* test test
+    document.addEventListener("keyup", function() {
+    	tileSet.offset.X++;
+    	tileSet.offset.Y++;
+    });*/
 	return tileSet;	
 }

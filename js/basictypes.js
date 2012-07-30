@@ -58,7 +58,16 @@ bt.Color = function(input) {
 		blue: {
 			get: function() { return b; },
 			set: function(blue) { b = blue; }
-		}
-		
+		},
+		toString: {
+			value : function() {
+			return "rgba(" + r + "," + g + "," + b + ",1.0)" }
+		},
+		mul: {
+			value: function(x) { 
+			r = r * x | 0;
+			g = g * x | 0;
+			b = b * x | 0; }
+		}		
 	});
 };
