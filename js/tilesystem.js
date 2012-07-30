@@ -78,12 +78,11 @@ ts.TileSet = function(tilearray, map) {
 	var tileSet = Object.create(ns.Node(), {
 			draw: {
 				value: function() {
-					if(tileSet.offset) {
-						var tl = tileSet.offset;
+					if(tileSet.offset) {						
 						var screenSize = bt.Vector(game.canvas.width / 64, game.canvas.height / 64);
 						var br = tileSet.offset.add(screenSize);
-						for(var x = tl.X; x < br.X; x++) {
-							for(var y = tl.Y; y < br.Y; y++) {
+						for(var x = tileSet.offset.X; x < br.X; x++) {
+							for(var y = tileSet.offset.Y; y < br.Y; y++) {
 								game.context.drawImage(tilearray[map[x][y]], (x - tileSet.offset.X) * 64, (y - tileSet.offset.Y) * 64);
 							}
 						}

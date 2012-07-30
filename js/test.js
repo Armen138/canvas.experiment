@@ -64,7 +64,7 @@ function displayStuff(img) {
 
     //var tileSet = ts.TileSet();
     //game.root.add(tileSet);    
-    var tile = ts.Tile(noised(400, 400, 120, 7, bt.Color("#FFF")));
+    //var tile = ts.Tile(noised(400, 400, 120, 7, bt.Color("#FFF")));
     var tiles = [
     	/*noised(64, 64, 6, 20, bt.Color("#11A600")),
     	noised(64, 64, 6, 20, bt.Color("#CCE010")),
@@ -77,13 +77,13 @@ function displayStuff(img) {
 
     ];
     //tile.scale = bt.Vector(10, 10);
-    tile.position = bt.Vector(400, 300);
-    game.root.add(tile);
-    for(var i = 0; i < tiles.length; i++) {
-    	var t = ts.Tile(tiles[i]);
-    	t.position = bt.Vector(64 * i + 32, 32);
-    	game.root.add(t);
-    }
+    //tile.position = bt.Vector(400, 300);
+    //game.root.add(tile);
+    //for(var i = 0; i < tiles.length; i++) {
+    //	var t = ts.Tile(tiles[i]);
+    	//t.position = bt.Vector(64 * i + 32, 32);
+    	//game.root.add(t);
+    //}
     var tileSet = ts.TileSet(tiles, noiseMap(100, 100, 40, 4));
     game.root.add(tileSet);    
 
