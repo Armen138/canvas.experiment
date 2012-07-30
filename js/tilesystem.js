@@ -9,7 +9,7 @@ ts.Tile = function(img) {
 	var tile = ns.Pooled.pull("tile"),
 		tileIndex = 0,
 		tilePosition = [0, 0],
-		tileSize = [64, 64],
+		tileSize = [tileSize, tileSize],
 		position = bt.Vector(),
 		WIDTH = 0,
 		HEIGHT = 1;
@@ -79,11 +79,11 @@ ts.TileSet = function(tilearray, map) {
 			draw: {
 				value: function() {
 					if(tileSet.offset) {						
-						var screenSize = bt.Vector(game.canvas.width / 64, game.canvas.height / 64);
+						var screenSize = bt.Vector(game.canvas.width / tileSize, game.canvas.height / tileSize);
 						var br = tileSet.offset.add(screenSize);
 						for(var x = tileSet.offset.X; x < br.X; x++) {
 							for(var y = tileSet.offset.Y; y < br.Y; y++) {
-								game.context.drawImage(tilearray[map[x][y]], (x - tileSet.offset.X) * 64, (y - tileSet.offset.Y) * 64);
+								game.context.drawImage(tilearray[map[x][y]], (x - tileSet.offset.X) * tileSize, (y - tileSet.offset.Y) * tileSize);
 							}
 						}
 						br.release();

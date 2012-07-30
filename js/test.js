@@ -1,9 +1,10 @@
+var tileSize = 32,
+	map = null;
 game = {
 	root: ns.Node(),
 	count: 0,
 	frames: 0,
-	fps: 0,
-
+	fps: 0
 };
 
 function noiseMap(w, h, res, lvl) {
@@ -66,14 +67,14 @@ function displayStuff(img) {
     //game.root.add(tileSet);    
     //var tile = ts.Tile(noised(400, 400, 120, 7, bt.Color("#FFF")));
     var tiles = [
-    	/*noised(64, 64, 6, 20, bt.Color("#11A600")),
-    	noised(64, 64, 6, 20, bt.Color("#CCE010")),
-    	noised(64, 64, 6, 20, bt.Color("#E6DFC8")),
-    	noised(64, 64, 6, 20, bt.Color("#7A6212"))*/
-    	baseTerrain(64, 64, bt.Color("#618C32")),
-    	baseTerrain(64, 64, bt.Color("#CCE010")),
-    	baseTerrain(64, 64, bt.Color("#E6DFC8")),
-    	baseTerrain(64, 64, bt.Color("#7A6212"))
+    	/*noised(tileSize, tileSize, 6, 20, bt.Color("#11A600")),
+    	noised(tileSize, tileSize, 6, 20, bt.Color("#CCE010")),
+    	noised(tileSize, tileSize, 6, 20, bt.Color("#E6DFC8")),
+    	noised(tileSize, tileSize, 6, 20, bt.Color("#7A6212"))*/
+    	baseTerrain(tileSize, tileSize, bt.Color("#618C32")),
+    	baseTerrain(tileSize, tileSize, bt.Color("#CCE010")),
+    	baseTerrain(tileSize, tileSize, bt.Color("#E6DFC8")),
+    	baseTerrain(tileSize, tileSize, bt.Color("#7A6212"))
 
     ];
     //tile.scale = bt.Vector(10, 10);
@@ -81,15 +82,30 @@ function displayStuff(img) {
     //game.root.add(tile);
     //for(var i = 0; i < tiles.length; i++) {
     //	var t = ts.Tile(tiles[i]);
-    	//t.position = bt.Vector(64 * i + 32, 32);
+    	//t.position = bt.Vector(tileSize * i + 32, 32);
     	//game.root.add(t);
     //}
     var tileSet = ts.TileSet(tiles, noiseMap(100, 100, 40, 4));
+    game.mousePosition = bt.Vector(0, 0);
+    document.addEventListener("mousemove", function(e) {
+    	game.mousePosition.X = e.clientX;
+    	game.mousePosition.Y = e.clientY;
+    });
     game.root.add(tileSet);    
-
+    map = tileSet;
 	render();
+	setInterval(mapHandler, 32);
 }
 
+function mapHandler() {
+	if(!map) return;
+	if(game.mousePosition.X < tileSize * 2) {
+		if(map.offset.X > 0) map.offset.X--;
+	}
+	if(game.mousePosition.X > window.innerWidth - tileSize * 2) {
+		if(map.offset.X < 20) map.offset.X++;
+	}	
+}
 function render() {
 	//game.context.fillRect(0, 0, window.innerWidth, window.innerHeight);
 	game.frames++;
