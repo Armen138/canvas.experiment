@@ -1,6 +1,6 @@
-/*	
+/*
 	ts tile system. A way to organise tiles to render in an orthographic way. Requeres ns (nodes), bt (basictypes)
-	and lucidJS for events. 
+	and lucidJS for events.
 */
 var ts = {};
 
@@ -17,7 +17,7 @@ ts.Tile = function(img) {
 		var image = img;
 		var draw = [image, - image.width / 2, - image.height / 2];
 		tile = Object.create(ns.Node(), {
-			draw: { 	
+			draw: {
 				value: function(context) {
 					context = context || game.context;
 					if(tile.visible) {
@@ -26,7 +26,7 @@ ts.Tile = function(img) {
 						if(tile.scale) {
 							context.scale(tile.scale.X, tile.scale.Y);
 						}
-						draw = [image, tilePosition[0], tilePosition[1], tileSize[WIDTH], tileSize[HEIGHT], - tileSize[WIDTH] / 2, - tileSize[HEIGHT] / 2, tileSize[WIDTH], tileSize[HEIGHT]];		
+						draw = [image, tilePosition[0], tilePosition[1], tileSize[WIDTH], tileSize[HEIGHT], - tileSize[WIDTH] / 2, - tileSize[HEIGHT] / 2, tileSize[WIDTH], tileSize[HEIGHT]];
 						context.drawImage.apply(context, draw);
 						tile.each(function() {
 							this.draw(context);
@@ -54,31 +54,37 @@ ts.Tile = function(img) {
 					var Y = parseInt(idx / (image.width / tileSize[WIDTH]), 10) * tileSize[WIDTH];
 					var X = parseInt(idx % (image.width / tileSize[HEIGHT]), 10) * tileSize[WIDTH];
 					tilePosition = [X, Y];
-					draw = [image, X, Y, tileSize[WIDTH], tileSize[HEIGHT], tile.parent.offset.X - tileSize[WIDTH] / 2, tile.parent.offset.Y - tileSize[HEIGHT] / 2, tileSize[WIDTH], tileSize[HEIGHT]];		
+					draw = [image, X, Y, tileSize[WIDTH], tileSize[HEIGHT], tile.parent.offset.X - tileSize[WIDTH] / 2, tile.parent.offset.Y - tileSize[HEIGHT] / 2, tileSize[WIDTH], tileSize[HEIGHT]];
 				}
 			},
 			image: {
 				set: function(img) {
 					image = img;
 				}
-			}			
+			}
 		});
 	} else {
 		tile.index = 0;
 		tile.image = img;
 	}
-	tile.dimension = bt.Vector();		
+	tile.dimension = bt.Vector();
 	LucidJS.emitter(tile);
 	return tile;
 };
 
 ts.TileSet = function(tilearray, map) {
-	console.log(tilearray);	
-	var gridSize = map.length;	
+	console.log(tilearray);
+	var gridSize = map.length;
 	var tileSet = Object.create(ns.Node(), {
+			width: {
+				value: map.length
+			},
+			height: {
+				value: map[0].length
+			},
 			draw: {
 				value: function() {
-					if(tileSet.offset) {						
+					if(tileSet.offset) {
 						var screenSize = bt.Vector(game.canvas.width / tileSize, game.canvas.height / tileSize);
 						var br = tileSet.offset.add(screenSize);
 						for(var x = tileSet.offset.X; x < br.X; x++) {
@@ -102,5 +108,5 @@ ts.TileSet = function(tilearray, map) {
     	tileSet.offset.X++;
     	tileSet.offset.Y++;
     });*/
-	return tileSet;	
+	return tileSet;
 }
