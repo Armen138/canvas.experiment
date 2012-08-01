@@ -6,7 +6,7 @@ game = {
 	frames: 0,
 	fps: 0
 };
-
+/*
 function noiseMap(w, h, res, lvl) {
 	var map = [],
 		noise = new SimplexNoise();	
@@ -17,7 +17,8 @@ function noiseMap(w, h, res, lvl) {
 		}
 	}	
 	return map;
-};
+};*/
+
 function makeCanvas(w, h) {
 	var canvas = document.createElement("canvas"),
 		context = canvas.getContext("2d");
@@ -64,7 +65,7 @@ function noised(w, h, res, lvl, color) {
 */
 
 function displayStuff(img) {
-	gameView();
+	gameView(800, 800);
 	render();
 }
 
@@ -91,7 +92,7 @@ if(!navigator.isCocoonJS) {
 game.makeCanvas = function() {
 	game.canvas = document.getElementById("game");
 	if(!game.canvas) {
-		game.canvas = makeCanvas(window.innerWidth, window.innerHeight).canvas;
+		game.canvas = makeCanvas(800, 800).canvas;
 		document.body.appendChild(game.canvas);
 	}
 	game.context = game.canvas.getContext("2d");

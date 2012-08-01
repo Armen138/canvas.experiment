@@ -72,24 +72,46 @@ ts.Tile = function(img) {
 	return tile;
 };
 
-ts.TileSet = function(tilearray, map) {
+ts.TileSet = function(tilearray, map, canvas, w, h) {
 	console.log(tilearray);
-	var gridSize = map.length;
-	var tileSet = Object.create(ns.Node(), {
+	var gridSize = map.length,
+		screenSize = bt.Vector(w / tileSize, h / tileSize),		
+		context = canvas.getContext("2d"),
+		tileSet = Object.create(ns.Node(), {
 			width: {
 				value: map.length
 			},
 			height: {
 				value: map[0].length
 			},
+			horizontal: {
+				value: function(d) {
+					context.drawImage(canvas, tileSize * d, 0);	
+					tileSet.offset.X -= d;
+					for(var y = 0 + tileSet.offset.Y; y < tileSet.offset.Y + screenSize.Y; y++) {
+						var x = (d < 0 ? screenSize.X : 0) + tileSet.offset.X - (d < 0 ? 1 : 0);
+						context.drawImage(tilearray[map[x][y]], (x - tileSet.offset.X) * tileSize, (y - tileSet.offset.Y) * tileSize);
+					}
+				}
+			},
+			vertical: {
+				value: function(d) {
+					context.drawImage(canvas, 0, tileSize * d);	
+					tileSet.offset.Y -= d;
+					for(var x = 0 + tileSet.offset.X; x < tileSet.offset.X + screenSize.X; x++) {
+						var y = (d < 0 ? screenSize.Y : 0) + tileSet.offset.Y - (d < 0 ? 1 : 0);
+						context.drawImage(tilearray[map[x][y]], (x - tileSet.offset.X) * tileSize, (y - tileSet.offset.Y) * tileSize);
+					}
+				}
+			},			
 			draw: {
 				value: function() {
 					if(tileSet.offset) {
-						var screenSize = bt.Vector(game.canvas.width / tileSize, game.canvas.height / tileSize);
+						
 						var br = tileSet.offset.add(screenSize);
 						for(var x = tileSet.offset.X; x < br.X; x++) {
 							for(var y = tileSet.offset.Y; y < br.Y; y++) {
-								game.context.drawImage(tilearray[map[x][y]], (x - tileSet.offset.X) * tileSize, (y - tileSet.offset.Y) * tileSize);
+								context.drawImage(tilearray[map[x][y]], (x - tileSet.offset.X) * tileSize, (y - tileSet.offset.Y) * tileSize);
 							}
 						}
 						br.release();
@@ -97,11 +119,11 @@ ts.TileSet = function(tilearray, map) {
 					}
 				}
 			}
-		}),
-		tiles = ns.Node(),
-		cache = (function() { var c = document.createElement("canvas"); c.width = game.canvas.width; c.height = game.canvas.height; return c;}()),
+		});
+		//tiles = ns.Node();
+		/*cache = (function() { var c = document.createElement("canvas"); c.width = game.canvas.width; c.height = game.canvas.height; return c;}()),
 		cacheTile = ts.Tile(cache),
-		context = cache.getContext("2d");
+		context = cache.getContext("2d");*/
     tileSet.offset = bt.Vector(0, 0);
     /* test test
     document.addEventListener("keyup", function() {

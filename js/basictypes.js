@@ -14,6 +14,12 @@ bt.Vector = function(x, y) {
 			subtract: { value: function(other) { return bt.Vector(vector.X - other.X, vector.Y - other.Y); }},
 			multiply: { value: function(other) { return bt.Vector(vector.X * other.X, vector.Y * other.Y); }},
 			divide: { value: function(other) { return bt.Vector(vector.X / other.X, vector.Y / other.Y); }},
+			is: { value: function(other) { return (vector.X === other.X && vector.Y === other.Y); }},
+			distanceTo: { value: function(other) { 
+				var xdiff = Math.abs(vector.X - other.X),
+		            ydiff = Math.abs(vector.Y - other.Y);				
+				return Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2)); }
+			},
 			type: { value: "vector" }
 		});
 	}
