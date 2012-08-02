@@ -2,8 +2,26 @@ Unit = function(tx, ty) {
 	var x = tx * tileSize,
 		y = ty * tileSize,
 		path = [],
+		angle = 1,
+		targetAngle = 0,
+		tileTime = 0,
+		moveDuration = 100,
 		color = "rgba(0, 200, 100, 1.0)",
+		getAngle = function(x1, y1, x2, y2) {
+			var diff = bt.Vector(x1 - x2, y1 - y2);
+			if(diff.X < 0 && diff.Y < 0){ return 3 * Math.PI / 4; }
+			if(diff.X === 0 && diff.Y < 0){ return Math.PI; }
+			if(diff.X > 0 && diff.Y < 0){ return Math.PI / 4; }
+			if(diff.X < 0 && diff.Y === 0){ return Math.PI / 2; }
+			if(diff.X > 0 && diff.Y === 0){ return 3 * Math.PI / 2; }
+			if(diff.X < 0 && diff.Y > 0){ return 5 * Math.PI / 4; }
+			if(diff.X === 0 && diff.Y > 0){ return 0; }
+			if(diff.X > 0 && diff.Y > 0){ return 7 * Math.PI / 4; }
+			return 0;
+		},
 		setTile = function(ntx, nty) {
+			tx = ntx;
+			ty = nty;
 			x = ntx * tileSize;
 			y = nty * tileSize;
 		},
@@ -39,6 +57,7 @@ Unit = function(tx, ty) {
 				for(n = 0; n < neighbors.length; n++){
 					node = neighbors[n];
 					if(node.P.is(end)){
+
 						path = [];
 						node.parent = parent;
 						path.unshift(node.P);
@@ -74,23 +93,53 @@ Unit = function(tx, ty) {
 			//No path found
 			return [];
 		};
-	setInterval(function() {
-		if(path.length > 0) {
-			var to = path.shift();
-			setTile(to.X, to.Y);
-		}
-	}, 200);
 	return {
 		draw: function() {
+			game.context.save();
 			game.context.fillStyle = color;
 			game.context.strokeStyle = "black";
-			game.context.fillRect(x - gameView.map.offset.X * tileSize, y - gameView.map.offset.Y * tileSize, 16, 32);
-			game.context.strokeRect(x - gameView.map.offset.X * tileSize, y - gameView.map.offset.Y * tileSize, 16, 32);
+			game.context.translate(x - game.map.offset.X * tileSize, y - game.map.offset.Y * tileSize);
+			game.context.rotate(angle);
+			game.context.fillRect(-8, -16, 16, 32);
+			game.context.strokeRect(-8, -16, 16, 32);
+			game.context.restore();
+			//console.log(angle);
+			//console.log(targetAngle);
+			if(angle != targetAngle) {
+				//angle += 0.1;
+			}
+			this.update();
 		},
-		go: function(dtx, dty) {
-			var dest = gameView.map.at(dtx, dty);
-				path = findPath(bt.Vector(x / tileSize | 0, y / tileSize | 0), dest);
-			console.log(path);
+		go: function(dest) {
+			path = findPath(bt.Vector(x / tileSize | 0, y / tileSize | 0), dest);
+			tileTime = (new Date()).getTime();
+		},
+		update: function() {
+			if(path.length > 0) {
+				curTime = (new Date()).getTime() - tileTime;
+				if(curTime > moveDuration) {
+					var to = path.shift();
+					setTile(to.X, to.Y);
+					tileTime = (new Date()).getTime();
+				}
+				else {
+					var xdest = path[0].X * tileSize,
+						ydest = path[0].Y * tileSize,
+						xtarg = tx * tileSize,
+						ytarg = ty * tileSize,
+						xdiff = xdest - xtarg,
+						ydiff = ydest - ytarg,
+						fract = parseFloat(curTime) / parseFloat(moveDuration);
+					x = xtarg + (fract * xdiff) | 0;
+					y = ytarg + (fract * ydiff) | 0;
+					angle = getAngle(xdest, ydest, xtarg, ytarg);
+				}
+				/*
+				var to = path.shift();
+				setTile(to.X, to.Y);
+				*/
+
+			}
 		}
 	}
 };
