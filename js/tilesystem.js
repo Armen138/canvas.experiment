@@ -84,6 +84,11 @@ ts.TileSet = function(tilearray, map, canvas, w, h) {
 			height: {
 				value: map[0].length
 			},
+			at: {
+				value: function(x, y) {
+					return bt.Vector((x / tileSize | 0)+ gameView.map.offset.X, (y / tileSize | 0) + gameView.map.offset.Y);
+				}
+			},
 			horizontal: {
 				value: function(d) {
 					context.drawImage(canvas, tileSize * d, 0);	
@@ -115,20 +120,12 @@ ts.TileSet = function(tilearray, map, canvas, w, h) {
 							}
 						}
 						br.release();
-						screenSize.release();
+						//screenSize.release();
 					}
 				}
 			}
 		});
-		//tiles = ns.Node();
-		/*cache = (function() { var c = document.createElement("canvas"); c.width = game.canvas.width; c.height = game.canvas.height; return c;}()),
-		cacheTile = ts.Tile(cache),
-		context = cache.getContext("2d");*/
+
     tileSet.offset = bt.Vector(0, 0);
-    /* test test
-    document.addEventListener("keyup", function() {
-    	tileSet.offset.X++;
-    	tileSet.offset.Y++;
-    });*/
 	return tileSet;
 }

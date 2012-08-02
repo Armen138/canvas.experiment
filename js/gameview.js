@@ -23,11 +23,6 @@ function gameView(w, h) {
     	game.mousePosition.Y = e.clientY;
     });
     game.root.add(gameView);
-    var unit = Unit(10, 10);
-    game.canvas.addEventListener("click", function(e) {
-        unit.go(e.clientX, e.clientY);
-    });
-    game.root.add(unit);
     console.log(gameView.map.height);
     gameView.map.draw();
 	setInterval(gameView.scrollHandler, 32);
