@@ -75,9 +75,14 @@ ts.Tile = function(img) {
 ts.TileSet = function(tilearray, map, canvas, w, h) {
 	console.log(tilearray);
 	var gridSize = map.length,
-		screenSize = bt.Vector(w / tileSize, h / tileSize),		
+		screenSize = bt.Vector(w / tileSize, h / tileSize),
 		context = canvas.getContext("2d"),
 		tileSet = Object.create(ns.Node(), {
+			at: {
+				value: function(x, y) {
+					return bt.Vector((x / tileSize + tileSet.offset.X) | 0, (y / tileSize + tileSet.offset.Y) | 0);
+				}
+			},
 			width: {
 				value: map.length
 			},
@@ -86,7 +91,7 @@ ts.TileSet = function(tilearray, map, canvas, w, h) {
 			},
 			horizontal: {
 				value: function(d) {
-					context.drawImage(canvas, tileSize * d, 0);	
+					context.drawImage(canvas, tileSize * d, 0);
 					tileSet.offset.X -= d;
 					for(var y = 0 + tileSet.offset.Y; y < tileSet.offset.Y + screenSize.Y; y++) {
 						var x = (d < 0 ? screenSize.X : 0) + tileSet.offset.X - (d < 0 ? 1 : 0);
@@ -96,18 +101,18 @@ ts.TileSet = function(tilearray, map, canvas, w, h) {
 			},
 			vertical: {
 				value: function(d) {
-					context.drawImage(canvas, 0, tileSize * d);	
+					context.drawImage(canvas, 0, tileSize * d);
 					tileSet.offset.Y -= d;
 					for(var x = 0 + tileSet.offset.X; x < tileSet.offset.X + screenSize.X; x++) {
 						var y = (d < 0 ? screenSize.Y : 0) + tileSet.offset.Y - (d < 0 ? 1 : 0);
 						context.drawImage(tilearray[map[x][y]], (x - tileSet.offset.X) * tileSize, (y - tileSet.offset.Y) * tileSize);
 					}
 				}
-			},			
+			},
 			draw: {
 				value: function() {
 					if(tileSet.offset) {
-						
+
 						var br = tileSet.offset.add(screenSize);
 						for(var x = tileSet.offset.X; x < br.X; x++) {
 							for(var y = tileSet.offset.Y; y < br.Y; y++) {
@@ -115,7 +120,7 @@ ts.TileSet = function(tilearray, map, canvas, w, h) {
 							}
 						}
 						br.release();
-						screenSize.release();
+						//screenSize.release();
 					}
 				}
 			}
