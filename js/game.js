@@ -9,16 +9,28 @@ var tileSize = 32,
     	fps: 0,
         collisionMap: [],
         map: []
+    }, collision = {
+        PASSABLE: 0,
+        UNPASSABLE: 1,
+        UNIT: 2,
+        RESERVED: 3
     };
 
 game.addUnit = function(x, y) {
     var unit = Unit(x, y);
-    game.selectedUnits.add(unit);
-    game.units.add(unit);
-    game.canvas.addEventListener("click", function(e) {
-        game.selectedUnits.each(function() {
-        	this.go(game.map.at(e.clientX, e.clientY));
+    game.units.draw = function() {
+        game.units.each(function() {
+            this.draw();
         });
-    });
-    game.root.add(unit);
+    }
+    //game.selectedUnits.add(unit);
+    unit.on("click", (function(unit) {
+        return function() {
+            unit.select();
+            game.selectedUnits.add(unit);
+        }
+    }(unit)));
+    game.units.add(unit);
+    game.root.add(game.units);
 }
+

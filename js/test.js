@@ -11,7 +11,27 @@ function makeCanvas(w, h) {
 
 function displayStuff(img) {
 	gameView(800, 800);
-	game.addUnit(10, 10);
+	game.canvas.addEventListener("mouseup", function(e) {
+		console.log(e.button);
+		if(e.button === 0) {
+		    game.selectedUnits.each(function() {
+		        this.go(game.map.at(e.clientX, e.clientY));
+		    });
+		    game.units.each(function() {
+		        this.click(e.clientX, e.clientY);
+		    });
+		} else {
+		    game.selectedUnits.each(function() {
+		        this.deselect();
+		    });
+		    game.selectedUnits.clear();
+
+		}
+		return false;
+	});	
+	for( var i = 0; i < 5; i++) {
+		game.addUnit(10 + i, 10);	
+	}	
 	render();
 	/*setInterval(function() {
 		game.units.each(function() {

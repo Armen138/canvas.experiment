@@ -72,6 +72,7 @@ ts.Tile = function(img) {
 	return tile;
 };
 
+//kill Tile and merge into Map object
 ts.TileSet = function(tilearray, map, canvas, w, h) {
 	console.log(tilearray);
 	var gridSize = map.length,
@@ -125,12 +126,22 @@ ts.TileSet = function(tilearray, map, canvas, w, h) {
 							}
 						}
 						br.release();
-						//screenSize.release();
 					}
 				}
 			}
 		});
 
+	//create initial collision map
+	for(var x = 0; x < map.length; x++) {
+		game.collisionMap[x] = new Uint8Array(map[0].length);
+		for(var y = 0; y < map[0].length; y++) {
+			if(map[x][y] === 0) {
+				game.collisionMap[x][y] = collision.UNPASSABLE;
+			} else {
+				game.collisionMap[x][y] = collision.PASSABLE;
+			}
+		}
+	}
     tileSet.offset = bt.Vector(0, 0);
 	return tileSet;
 }

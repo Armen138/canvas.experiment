@@ -1,3 +1,4 @@
+//merge into Map object
 function gameView(w, h) {
     var c = makeCanvas(w, h);
     gameView.canvas = c.canvas;

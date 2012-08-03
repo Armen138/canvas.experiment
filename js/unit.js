@@ -2,9 +2,9 @@ Unit = function(tx, ty) {
 	var x = tx * tileSize,
 		y = ty * tileSize,
 		path = [],
-		angle = 1,
-		targetAngle = 0,
+		angle = 0,
 		tileTime = 0,
+		selected = false,
 		moveDuration = 100,
 		color = "rgba(0, 200, 100, 1.0)",
 		getAngle = function(x1, y1, x2, y2) {
@@ -20,10 +20,12 @@ Unit = function(tx, ty) {
 			return 0;
 		},
 		setTile = function(ntx, nty) {
+			game.collisionMap[tx][ty] = collision.PASSABLE;
 			tx = ntx;
 			ty = nty;
 			x = ntx * tileSize;
 			y = nty * tileSize;
+			game.collisionMap[tx][ty] = collision.UNIT;
 		},
 		isInList = function(item, list){
 	        var i;
@@ -67,7 +69,7 @@ Unit = function(tx, ty) {
 						}
 						return path;
 					}
-					if(isInList(node, closedList) === -1 /*&& this.isSafeTile(node)*/){
+					if(isInList(node, closedList) === -1 && game.collisionMap[node.P.X][node.P.Y] === collision.PASSABLE){
 						node.H = node.P.distanceTo(end);
 						node.F = node.G + node.H;
 						var listNode = openList[isInList(node, openList)];
@@ -93,26 +95,47 @@ Unit = function(tx, ty) {
 			//No path found
 			return [];
 		};
-	return {
+	game.collisionMap[tx][ty] = collision.UNIT;
+	var unit = {
+		select: function() {
+			selected = true;
+		},
+		deselect: function() {
+			selected = false;
+		},
 		draw: function() {
 			game.context.save();
 			game.context.fillStyle = color;
-			game.context.strokeStyle = "black";
+			game.context.strokeStyle = selected ? "yellow" : "black";
 			game.context.translate(x - game.map.offset.X * tileSize, y - game.map.offset.Y * tileSize);
 			game.context.rotate(angle);
 			game.context.fillRect(-8, -16, 16, 32);
 			game.context.strokeRect(-8, -16, 16, 32);
 			game.context.restore();
-			//console.log(angle);
-			//console.log(targetAngle);
-			if(angle != targetAngle) {
-				//angle += 0.1;
-			}
 			this.update();
 		},
 		go: function(dest) {
-			path = findPath(bt.Vector(x / tileSize | 0, y / tileSize | 0), dest);
-			tileTime = (new Date()).getTime();
+			while( game.collisionMap[dest.X][dest.Y] !== collision.PASSABLE) {
+				dest.X--;
+			} 
+			if(game.collisionMap[dest.X][dest.Y] === collision.PASSABLE) {			
+				path = findPath(bt.Vector(tx, ty), dest);
+				tileTime = (new Date()).getTime();			
+				game.collisionMap[tx][ty] = collision.PASSABLE;
+				game.collisionMap[dest.X][dest.Y] = collision.RESERVED;
+			} else {
+				console.log("sir no sir, destination is: " + game.collisionMap[dest.X][dest.Y]);
+			}
+		},
+		click: function(clickx, clicky) {
+			var sx = x - game.map.offset.X * tileSize,
+				sy = y - game.map.offset.Y * tileSize;
+			if( clickx > sx - 16 &&
+				clickx <  sx + 16 &&
+				clicky > sy - 16 &&
+				clicky < sy + 16) {
+				unit.trigger("click");
+			}
 		},
 		update: function() {
 			if(path.length > 0) {
@@ -134,12 +157,9 @@ Unit = function(tx, ty) {
 					y = ytarg + (fract * ydiff) | 0;
 					angle = getAngle(xdest, ydest, xtarg, ytarg);
 				}
-				/*
-				var to = path.shift();
-				setTile(to.X, to.Y);
-				*/
-
 			}
 		}
 	}
+	LucidJS.emitter(unit);
+	return unit;
 };

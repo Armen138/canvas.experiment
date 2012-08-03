@@ -6,7 +6,7 @@ procedural.terrain = function(w, h, color) {
 	d.context.fillRect(0, 0, w, h);
 	color.mul(0.8);
 	d.context.fillStyle = color.toString();
-	for(var i = 0; i < w / 4; i++) {
+	for(var i = 0; i < 128; i++) {
 		var x = Math.random() * w | 0;
 		var y = Math.random() * h | 0;
 		d.context.fillRect(x, y, Math.random() * 4 | 0, Math.random() * 4 | 0);
