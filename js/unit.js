@@ -1,6 +1,7 @@
 Unit = function(tx, ty) {
 	var x = tx * tileSize,
 		y = ty * tileSize,
+		pathFinder = new Worker("js/astar.js"),
 		path = [],
 		angle = 0,
 		tileTime = 0,
@@ -26,74 +27,6 @@ Unit = function(tx, ty) {
 			x = ntx * tileSize;
 			y = nty * tileSize;
 			game.collisionMap[tx][ty] = collision.UNIT;
-		},
-		isInList = function(item, list){
-	        var i;
-			for( i = 0; i < list.length; i++){
-				if(item.P.is(list[i].P)){
-					return i;
-				}
-			}
-			return -1;
-		},
-		findPath = function(start, end) {
-			var openList = [],
-				closedList = [],
-				currentNode = start,
-				parent = { G: 0, H: start.distanceTo(end), F: start.distanceTo(end), P: start },
-	        	n, node, path, i, lowest;
-			openList.push(parent);
-			while(openList.length > 0){
-				currentNode = parent.P;
-				var neighbors = [ { G: parent.G + 1, H: 0, F: 0, P: bt.Vector(currentNode.X, currentNode.Y - 1) },
-								  { G: parent.G + 1, H: 0, F: 0, P: bt.Vector(currentNode.X - 1, currentNode.Y - 1)},
-								  { G: parent.G + 1, H: 0, F: 0, P: bt.Vector(currentNode.X - 1, currentNode.Y)},
-								  { G: parent.G + 1, H: 0, F: 0, P: bt.Vector(currentNode.X, currentNode.Y + 1)},
-								  { G: parent.G + 1, H: 0, F: 0, P: bt.Vector(currentNode.X + 1, currentNode.Y + 1)},
-								  { G: parent.G + 1, H: 0, F: 0, P: bt.Vector(currentNode.X + 1, currentNode.Y)},
-								  { G: parent.G + 1, H: 0, F: 0, P: bt.Vector(currentNode.X + 1, currentNode.Y - 1)},
-								  { G: parent.G + 1, H: 0, F: 0, P: bt.Vector(currentNode.X - 1, currentNode.Y + 1)} ];
-
-				closedList.push(parent);
-				openList.splice(isInList(parent, openList), 1);
-				for(n = 0; n < neighbors.length; n++){
-					node = neighbors[n];
-					if(node.P.is(end)){
-
-						path = [];
-						node.parent = parent;
-						path.unshift(node.P);
-						while(!node.P.is(start)){
-							node = node.parent;
-							path.unshift(node.P);
-						}
-						return path;
-					}
-					if(isInList(node, closedList) === -1 && game.collisionMap[node.P.X][node.P.Y] === collision.PASSABLE){
-						node.H = node.P.distanceTo(end);
-						node.F = node.G + node.H;
-						var listNode = openList[isInList(node, openList)];
-						if(listNode && listNode.F > node.F){
-							listNode.parent = parent;
-							listNode.F = node.F;
-							listNode.G = node.G;
-						}
-						else if(!listNode){
-							node.parent = parent;
-							openList.push(node);
-						}
-					}
-				}
-	            lowest = 0;
-				for(i = 0; i < openList.length; i++){
-					if(openList[i].F < openList[lowest].F){
-						lowest = i;
-					}
-				}
-				parent = openList[lowest];
-			}
-			//No path found
-			return [];
 		};
 	game.collisionMap[tx][ty] = collision.UNIT;
 	var unit = {
@@ -114,15 +47,20 @@ Unit = function(tx, ty) {
 			game.context.restore();
 			this.update();
 		},
+		isInside: function(rect) { return (x > rect[0] && x < rect[0] + rect[2] && y > rect[1] && y < rect[1] + rect[3]); },
 		go: function(dest) {
 			while( game.collisionMap[dest.X][dest.Y] !== collision.PASSABLE) {
 				dest.X--;
-			} 
-			if(game.collisionMap[dest.X][dest.Y] === collision.PASSABLE) {			
-				path = findPath(bt.Vector(tx, ty), dest);
-				tileTime = (new Date()).getTime();			
-				game.collisionMap[tx][ty] = collision.PASSABLE;
-				game.collisionMap[dest.X][dest.Y] = collision.RESERVED;
+			}
+			if(game.collisionMap[dest.X][dest.Y] === collision.PASSABLE) {
+				pathFinder.postMessage({ collisionMap: game.collisionMap, x1: tx, y1: ty, x2: dest.X, y2: dest.Y });
+				pathFinder.addEventListener("message", function(foundPath) {
+					console.log(foundPath.data);
+					path = foundPath.data;
+					tileTime = (new Date()).getTime();
+					game.collisionMap[tx][ty] = collision.PASSABLE;
+					game.collisionMap[dest.X][dest.Y] = collision.RESERVED;
+				});
 			} else {
 				console.log("sir no sir, destination is: " + game.collisionMap[dest.X][dest.Y]);
 			}
@@ -135,7 +73,9 @@ Unit = function(tx, ty) {
 				clicky > sy - 16 &&
 				clicky < sy + 16) {
 				unit.trigger("click");
+				return true;
 			}
+			return false;
 		},
 		update: function() {
 			if(path.length > 0) {

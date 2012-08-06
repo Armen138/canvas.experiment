@@ -16,6 +16,13 @@ var tileSize = 32,
         RESERVED: 3
     };
 
+game.deselectAll = function() {
+    game.selectedUnits.each(function() {
+        this.deselect();
+    });
+    game.selectedUnits.clear();
+};
+
 game.addUnit = function(x, y) {
     var unit = Unit(x, y);
     game.units.draw = function() {
@@ -26,6 +33,7 @@ game.addUnit = function(x, y) {
     //game.selectedUnits.add(unit);
     unit.on("click", (function(unit) {
         return function() {
+            game.deselectAll();
             unit.select();
             game.selectedUnits.add(unit);
         }

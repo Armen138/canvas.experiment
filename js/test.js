@@ -11,27 +11,10 @@ function makeCanvas(w, h) {
 
 function displayStuff(img) {
 	gameView(800, 800);
-	game.canvas.addEventListener("mouseup", function(e) {
-		console.log(e.button);
-		if(e.button === 0) {
-		    game.selectedUnits.each(function() {
-		        this.go(game.map.at(e.clientX, e.clientY));
-		    });
-		    game.units.each(function() {
-		        this.click(e.clientX, e.clientY);
-		    });
-		} else {
-		    game.selectedUnits.each(function() {
-		        this.deselect();
-		    });
-		    game.selectedUnits.clear();
-
-		}
-		return false;
-	});	
 	for( var i = 0; i < 5; i++) {
-		game.addUnit(10 + i, 10);	
-	}	
+		game.addUnit(10 + i, 10);
+	}
+	hookEvents();
 	render();
 	/*setInterval(function() {
 		game.units.each(function() {
@@ -40,12 +23,60 @@ function displayStuff(img) {
 	}, 32);*/
 }
 
+function hookEvents() {
+	game.canvas.addEventListener("mousedown", function(e) {
+		game.mouseDown = true;
+		game.dragStart = bt.Vector(e.clientX, e.clientY);
+	});
+	game.canvas.addEventListener("mousemove", function(e) {
+    	game.mousePosition.X = e.clientX;
+    	game.mousePosition.Y = e.clientY;
+    	if(game.mouseDown) {
+    		game.selection = [game.dragStart.X, game.dragStart.Y,  e.clientX - game.dragStart.X, e.clientY - game.dragStart.Y];
+    	}
+	});
+	game.canvas.addEventListener("mouseup", function(e) {
+		game.dragStart.release();
+		game.mouseDown = false;
+		if(game.dragStart.distanceTo({X: e.clientX, Y: e.clientY }) < 16) {
+			var selected = false;
+			if(e.button === 0) {
+				game.units.each(function() {
+			        if(this.click(e.clientX, e.clientY)) {
+			        	selected = true;
+			        };
+			    });
+			    if(!selected) {
+				    game.selectedUnits.each(function() {
+				        this.go(game.map.at(e.clientX, e.clientY));
+				    });
+				}
+			} else {
+				game.deselectAll();
+			}
+		} else {
+			//select inside box
+			game.units.each(function() {
+				if(this.isInside(game.selection)) {
+					this.select();
+					game.selectedUnits.add(this);
+				}
+			});
+		}
+		game.selection = null;
+		return false;
+	});
+}
 function render() {
 	//game.context.fillRect(0, 0, window.innerWidth, window.innerHeight);
 	game.frames++;
 	game.root.each(function() {
 		this.draw();
 	});
+	if(game.selection) {
+		game.context.fillStyle = "rgba(30, 210, 230, 0.5)";
+		game.context.fillRect.apply(game.context, game.selection);
+	}
     //if(window.webkitRequestAnimationFrame) {
 	//	webkitRequestAnimationFrame(render);
     //} else {

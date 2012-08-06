@@ -1,30 +1,31 @@
 /* bt (Basic Types) depends on ns (nodes) for pooling */
 
-/*  ns.Vector inherits from ns.Pooled through Object.create. 
+/*  ns.Vector inherits from ns.Pooled through Object.create.
 	In addition, it checks if a discarded object is available,
 	and returns it instead of a new instance
 */
 var bt = {};
 bt.Vector = function(x, y) {
-	"use strict";	
+	"use strict";
 	var vector = ns.Pooled.pull("vector");
-	if(!vector) {	
+	if(!vector) {
 		vector = Object.create(ns.Pooled(), {
 			add: { value: function(other) { return bt.Vector(vector.X + other.X, vector.Y + other.Y); }},
 			subtract: { value: function(other) { return bt.Vector(vector.X - other.X, vector.Y - other.Y); }},
 			multiply: { value: function(other) { return bt.Vector(vector.X * other.X, vector.Y * other.Y); }},
 			divide: { value: function(other) { return bt.Vector(vector.X / other.X, vector.Y / other.Y); }},
 			is: { value: function(other) { return (vector.X === other.X && vector.Y === other.Y); }},
-			distanceTo: { value: function(other) { 
+			isInside: { value: function(rect) { return (vector.X > rect[0] && vector.X < rect[0] + rect[2] && vector.Y > rect[1] && vector.Y < rect[1] + rect[3]); }},
+			distanceTo: { value: function(other) {
 				var xdiff = Math.abs(vector.X - other.X),
-		            ydiff = Math.abs(vector.Y - other.Y);				
+		            ydiff = Math.abs(vector.Y - other.Y);
 				return Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2)); }
 			},
 			type: { value: "vector" }
 		});
 	}
 	vector.X = x || 0;
-	vector.Y = y || 0;	
+	vector.Y = y || 0;
 	return vector;
 };
 
@@ -70,10 +71,10 @@ bt.Color = function(input) {
 			return "rgba(" + r + "," + g + "," + b + ",1.0)" }
 		},
 		mul: {
-			value: function(x) { 
+			value: function(x) {
 			r = r * x | 0;
 			g = g * x | 0;
 			b = b * x | 0; }
-		}		
+		}
 	});
 };
