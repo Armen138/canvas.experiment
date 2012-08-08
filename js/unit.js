@@ -96,11 +96,11 @@ Unit = function(tx, ty) {
 					x = xtarg + (fract * xdiff) | 0;
 					y = ytarg + (fract * ydiff) | 0;
 					angle = getAngle(xdest, ydest, xtarg, ytarg);
-					if(path.length > 0 && game.collisionMap[path[0].X][path[0].Y] !== collision.PASSABLE) {
+					/*if(path.length > 0 && game.collisionMap[path[0].X][path[0].Y] !== collision.PASSABLE) {
 						path = [];
 						x = xtarg;
 						y = ytarg;
-					}					
+					}*/
 				}
 			}
 		}
