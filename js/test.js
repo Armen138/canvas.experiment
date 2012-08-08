@@ -47,8 +47,12 @@ function hookEvents() {
 			        };
 			    });
 			    if(!selected) {
+			    	var idx = 0,
+			    		p = game.map.at(e.clientX, e.clientY);
 				    game.selectedUnits.each(function() {
-				        this.go(game.map.at(e.clientX, e.clientY));
+				    	var to = p.add(procedural.spiral(idx)); //idx > 0 ? p.add(procedural.spiral(idx)) : p;
+				        this.go(to);
+				        idx++;
 				    });
 				}
 			} else {

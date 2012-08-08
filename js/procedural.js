@@ -47,3 +47,19 @@ procedural.noiseMap = function(w, h, res, lvl) {
 	}
 	return map;
 };
+
+procedural.spiral = function(n) {
+	if(n == 0) { return {X: 0, Y: 0}; } else {
+		var shell = ((Math.sqrt(n)+1)/2) | 0,
+		leg = ((n-(2*shell-1)^2)/(2*shell)) | 0,
+		element = (n-(2*shell-1)^2)-2*shell*leg-shell+1,
+		xn = leg===0? shell: leg===1? -element: leg===2? -shell: element,
+		yn = leg===0? element : leg===1? shell : leg===2? -element : - shell;
+	}
+	return {X: xn, Y: yn};
+};
+/*
+for(var i = 0; i < 100; i++){
+	console.log(procedural.spiral(i));
+}
+*/
