@@ -10,6 +10,7 @@ bt.Vector = function(x, y) {
 	var vector = ns.Pooled.pull("vector");
 	if(!vector) {
 		vector = Object.create(ns.Pooled(), {
+			shallow: { value: function() { return { X: vector.X, Y: vector.Y }; }},
 			add: { value: function(other) { return bt.Vector(vector.X + other.X, vector.Y + other.Y); }},
 			subtract: { value: function(other) { return bt.Vector(vector.X - other.X, vector.Y - other.Y); }},
 			multiply: { value: function(other) { return bt.Vector(vector.X * other.X, vector.Y * other.Y); }},

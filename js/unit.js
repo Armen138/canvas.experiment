@@ -47,19 +47,18 @@ Unit = function(tx, ty) {
 			game.context.restore();
 			this.update();
 		},
-		isInside: function(rect) { return (x > rect[0] && x < rect[0] + rect[2] && y > rect[1] && y < rect[1] + rect[3]); },
+		isInside: function(rect) {
+			var ox = game.map.offset.X * tileSize, oy = game.map.offset.Y * tileSize;
+			return (x > rect[0] + ox && x < rect[0] + ox + rect[2] && y > rect[1] + oy && y < rect[1] + oy + rect[3]);
+		},
 		go: function(dest) {
-			while( game.collisionMap[dest.X][dest.Y] !== collision.PASSABLE) {
-				dest.X--;
-			}
 			if(game.collisionMap[dest.X][dest.Y] === collision.PASSABLE) {
+				game.collisionMap[tx][ty] = collision.PASSABLE;
+				game.collisionMap[dest.X][dest.Y] = collision.RESERVED;
 				pathFinder.postMessage({ collisionMap: game.collisionMap, x1: tx, y1: ty, x2: dest.X, y2: dest.Y });
 				pathFinder.addEventListener("message", function(foundPath) {
-					console.log(foundPath.data);
 					path = foundPath.data;
 					tileTime = (new Date()).getTime();
-					game.collisionMap[tx][ty] = collision.PASSABLE;
-					game.collisionMap[dest.X][dest.Y] = collision.RESERVED;
 				});
 			} else {
 				console.log("sir no sir, destination is: " + game.collisionMap[dest.X][dest.Y]);

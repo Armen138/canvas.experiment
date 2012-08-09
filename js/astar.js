@@ -38,30 +38,35 @@ function findPath(collisionMap, s, e) {
 		closedList.push(parent);
 		openList.splice(isInList(parent, openList), 1);
 		for(n = 0; n < neighbors.length; n++){
-			node = neighbors[n];
-			if(node.P.is(end)){
+			if(	neighbors[n].P.X > 0 &&
+				neighbors[n].P.Y > 0 &&
+				neighbors[n].P.X < collisionMap.length &&
+				neighbors[n].P.Y < collisionMap[0].length ) {
+				node = neighbors[n];
+				if(node.P.is(end)){
 
-				path = [];
-				node.parent = parent;
-				path.unshift({X: node.P.X, Y: node.P.Y});
-				while(!node.P.is(start)){
-					node = node.parent;
-					path.unshift({X: node.P.X, Y: node.P.Y});
-				}
-				return path;
-			}
-			if(isInList(node, closedList) === -1 && collisionMap[node.P.X][node.P.Y] === 0 /* collision.PASSABLE */){
-				node.H = node.P.distanceTo(end);
-				node.F = node.G + node.H;
-				var listNode = openList[isInList(node, openList)];
-				if(listNode && listNode.F > node.F){
-					listNode.parent = parent;
-					listNode.F = node.F;
-					listNode.G = node.G;
-				}
-				else if(!listNode){
+					path = [];
 					node.parent = parent;
-					openList.push(node);
+					path.unshift({X: node.P.X, Y: node.P.Y});
+					while(!node.P.is(start)){
+						node = node.parent;
+						path.unshift({X: node.P.X, Y: node.P.Y});
+					}
+					return path;
+				}
+				if(isInList(node, closedList) === -1 && collisionMap[node.P.X][node.P.Y] === 0 /* collision.PASSABLE */){
+					node.H = node.P.distanceTo(end);
+					node.F = node.G + node.H;
+					var listNode = openList[isInList(node, openList)];
+					if(listNode && listNode.F > node.F){
+						listNode.parent = parent;
+						listNode.F = node.F;
+						listNode.G = node.G;
+					}
+					else if(!listNode){
+						node.parent = parent;
+						openList.push(node);
+					}
 				}
 			}
 		}

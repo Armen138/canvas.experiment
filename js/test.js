@@ -11,16 +11,11 @@ function makeCanvas(w, h) {
 
 function displayStuff(img) {
 	gameView(800, 800);
-	for( var i = 0; i < 5; i++) {
+	for( var i = 0; i < 15; i++) {
 		game.addUnit(10 + i, 10);
 	}
 	hookEvents();
 	render();
-	/*setInterval(function() {
-		game.units.each(function() {
-			this.update();
-		});
-	}, 32);*/
 }
 
 function hookEvents() {
@@ -32,7 +27,12 @@ function hookEvents() {
     	game.mousePosition.X = e.clientX;
     	game.mousePosition.Y = e.clientY;
     	if(game.mouseDown) {
-    		game.selection = [game.dragStart.X, game.dragStart.Y,  e.clientX - game.dragStart.X, e.clientY - game.dragStart.Y];
+    		var topLeft= game.dragStart.shallow(),
+    			w = e.clientX - game.dragStart.X,
+    			h = e.clientY - game.dragStart.Y;
+    		if(w < 0) { topLeft.X += w; w *= -1; }
+    		if(h < 0) { topLeft.Y += h; h *= -1; }
+    		game.selection = [topLeft.X, topLeft.Y,  w, h];
     	}
 	});
 	game.canvas.addEventListener("mouseup", function(e) {
@@ -50,7 +50,17 @@ function hookEvents() {
 			    	var idx = 0,
 			    		p = game.map.at(e.clientX, e.clientY);
 				    game.selectedUnits.each(function() {
-				    	var to = p.add(procedural.spiral(idx)); //idx > 0 ? p.add(procedural.spiral(idx)) : p;
+				    	var to = (function() {
+				    		var np = p.add(procedural.spiral(idx));
+				    		while(	np.X > 0 && np.Y > 0 &&
+				    				np.X < game.collisionMap.length &&
+				    				np.Y < game.collisionMap[0].length &&
+				    				game.collisionMap[np.X][np.Y] !== collision.PASSABLE) {
+				    			idx++;
+				    			np = p.add(procedural.spiral(idx));
+				    		}
+				    		return np;
+				    	}());
 				        this.go(to);
 				        idx++;
 				    });
